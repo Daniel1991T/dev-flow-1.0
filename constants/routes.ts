@@ -5,10 +5,9 @@ const ROUTES = {
   COMUNITY: "/community",
   COLLECTION: "/collection",
   JOBS: "/find-jobs",
-  TAGS: "/tags",
-  TAG: (id: string) => `/tags/${id}`,
+  TAGS: (id: string) => `/tags/${id}`,
   PROFILE: (id: string) => `/profile/${id}`,
-  ASK_QUESTION: "/ask-a-question",
+  ASK_QUESTION: "/ask-question",
 };
 
 export default ROUTES;
