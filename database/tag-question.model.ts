@@ -1,9 +1,11 @@
-import { model, models, Schema, Types } from "mongoose";
+import { model, models, Schema, Types, Document } from "mongoose";
 
 export type TTagQuestion = {
   question: Types.ObjectId;
   tag: Types.ObjectId;
 };
+
+export type TTagQuestionDoc = TTagQuestion & Document;
 
 const TagQuestionSchema = new Schema<TTagQuestion>(
   {
