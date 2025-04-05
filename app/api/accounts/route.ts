@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 import Account from "@/database/account.model";
-import User from "@/database/user.model";
 import handleError from "@/lib/handlers/error";
 import { ForbiddenError } from "@/lib/http-errors";
 import dbConnect from "@/lib/mongoose";
@@ -34,7 +33,10 @@ export async function POST(request: Request) {
 
     const { provider, providerAccountId } = validatedData;
 
-    const existingAccount = await User.findOne({ provider, providerAccountId });
+    const existingAccount = await Account.findOne({
+      provider,
+      providerAccountId,
+    });
     if (existingAccount)
       throw new ForbiddenError(
         "An account with the same provider already exists",
