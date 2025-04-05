@@ -1,6 +1,6 @@
 import { model, models, Schema, Types } from "mongoose";
 
-type TQuestion = {
+export type TQuestion = {
   title: string;
   content: string;
   tags: Types.ObjectId[];

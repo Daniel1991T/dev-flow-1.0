@@ -1,6 +1,6 @@
 import { model, models, Schema, Types } from "mongoose";
 
-type TAccount = {
+export type TAccount = {
   userId: Types.ObjectId;
   name: string;
   image?: string;
