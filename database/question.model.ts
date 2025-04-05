@@ -24,5 +24,5 @@ const ModelSchema = new Schema<TQuestion>(
   },
   { timestamps: true },
 );
-const Question = models?.question || model<TQuestion>("Question", ModelSchema);
+const Question = models?.Question || model<TQuestion>("Question", ModelSchema);
 export default Question;

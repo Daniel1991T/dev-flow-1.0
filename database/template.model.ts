@@ -5,5 +5,5 @@ export type TModel = {
 };
 
 const ModelSchema = new Schema<TModel>({}, { timestamps: true });
-const Model = models?.model || model<TModel>("Account", ModelSchema);
+const Model = models?.Model || model<TModel>("Model", ModelSchema);
 export default Model;

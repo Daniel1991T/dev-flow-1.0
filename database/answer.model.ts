@@ -18,5 +18,5 @@ const AnswerSchema = new Schema<TAnswer>(
   },
   { timestamps: true },
 );
-const Answer = models?.model || model<TAnswer>("Answer", AnswerSchema);
+const Answer = models?.Answer || model<TAnswer>("Answer", AnswerSchema);
 export default Answer;

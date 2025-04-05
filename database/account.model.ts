@@ -20,5 +20,5 @@ const AccountSchema = new Schema<TAccount>(
   },
   { timestamps: true },
 );
-const Account = models?.account || model<TAccount>("Account", AccountSchema);
+const Account = models?.Account || model<TAccount>("Account", AccountSchema);
 export default Account;
