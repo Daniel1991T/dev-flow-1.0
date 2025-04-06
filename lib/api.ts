@@ -14,7 +14,7 @@ export const api = {
       provider,
       providerAccountId,
     }: SignInWithOAuthParams) =>
-      fetchHandler(`${AIP_BASE_URL}/auth/${ROUTES.SIGN_IN_WITH_OAUTH}`, {
+      fetchHandler(`${AIP_BASE_URL}/auth${ROUTES.SIGN_IN_WITH_OAUTH}`, {
         method: "POST",
         body: JSON.stringify({
           user,

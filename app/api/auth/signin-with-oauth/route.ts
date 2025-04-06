@@ -12,6 +12,7 @@ import { APIErrorResponse } from "@/types/global";
 
 export async function POST(request: Request) {
   const { provider, providerAccountId, user } = await request.json();
+  console.log("SignInWithOAuth", provider);
 
   await dbConnect();
   const session = await mongoose.startSession();
@@ -26,6 +27,8 @@ export async function POST(request: Request) {
     if (!validateData.success) {
       throw new ValidationError(validateData.error.flatten().fieldErrors);
     }
+    console.log("SignInWithOAuth", validateData.data);
+
     const { email, name, username, image } = user;
     const slugifiedUsername = slugify(username, {
       lower: true,
@@ -33,6 +36,7 @@ export async function POST(request: Request) {
       trim: true,
     });
     let existingUser = await User.findOne({ email }).session(session);
+    console.log("existingUser", existingUser);
 
     if (!existingUser) {
       [existingUser] = await User.create(
@@ -69,6 +73,7 @@ export async function POST(request: Request) {
       provider,
       providerAccountId,
     }).session(session);
+    console.log("existingAccount", existingAccount);
     if (!existingAccount) {
       await Account.create(
         [
@@ -83,8 +88,9 @@ export async function POST(request: Request) {
         { session },
       );
     }
+
     await session.commitTransaction();
-    return NextResponse.json({ succest: true }, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error: unknown) {
     await session.abortTransaction();
     return handleError(error, "api") as APIErrorResponse;
