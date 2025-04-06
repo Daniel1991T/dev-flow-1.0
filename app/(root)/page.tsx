@@ -1,12 +1,11 @@
 import Link from "next/link";
 
+import { auth } from "@/auth";
 import QuestionCard from "@/components/cards/QuestionCard";
 import HomeFilter from "@/components/filters/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
-import { api } from "@/lib/api";
-import handleError from "@/lib/handlers/error";
 import { Question } from "@/types/global";
 
 const questions = [
@@ -40,14 +39,6 @@ const questions = [
   },
 ] as Question[];
 
-const test = async () => {
-  try {
-    return api.users.getByEmail("jds@gmail.com");
-  } catch (error) {
-    return handleError(error);
-  }
-};
-
 type SearchParams = {
   searchParams: Promise<{ [key: string]: string }>;
 };
@@ -55,8 +46,8 @@ type SearchParams = {
 const Home = async ({ searchParams }: SearchParams) => {
   const { query = "" } = await searchParams;
 
-  const result = await test();
-  console.log(result);
+  const session = await auth();
+  console.log("Session", session);
 
   const filteredQuestions = questions.filter((question) =>
     question.title.toLowerCase().includes(query?.toLowerCase()),
