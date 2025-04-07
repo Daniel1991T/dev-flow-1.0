@@ -2,6 +2,7 @@
 import React from "react";
 
 import AuthForm from "@/components/forms/AuthForm";
+import { signUpWithCredentials } from "@/lib/actions/auth.actions";
 import { SignUpSchema } from "@/lib/validations";
 
 const SignUp = () => {
@@ -9,12 +10,7 @@ const SignUp = () => {
     <AuthForm
       formType="SIGN_UP"
       schema={SignUpSchema}
-      onSubmit={(data) =>
-        Promise.resolve({
-          success: true,
-          data,
-        })
-      }
+      onSubmit={signUpWithCredentials}
       defaultValues={{
         email: "",
         password: "",

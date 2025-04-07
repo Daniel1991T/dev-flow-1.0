@@ -1,6 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 import {
   DefaultValues,
@@ -22,12 +23,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import ROUTES from "@/constants/routes";
+import { toast } from "@/hooks/use-toast";
+import { ActionResponse } from "@/types/global";
 
 type AuthFormProps<T extends FieldValues> = {
   schema: ZodType<T>;
   defaultValues: T;
   formType: "SIGN_IN" | "SIGN_UP";
-  onSubmit: (data: T) => Promise<{ success: boolean }>;
+  onSubmit: (data: T) => Promise<ActionResponse>;
 };
 const AuthForm = <T extends FieldValues>({
   defaultValues,
@@ -35,14 +38,32 @@ const AuthForm = <T extends FieldValues>({
   onSubmit,
   schema,
 }: AuthFormProps<T>) => {
+  const router = useRouter();
   // 1. Define your form.
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: defaultValues as DefaultValues<T>,
   });
 
-  const handleSubmit: SubmitHandler<T> = async () => {
-    // TODO: Handle form submission logic here
+  const handleSubmit: SubmitHandler<T> = async (data) => {
+    const result = (await onSubmit(data)) as ActionResponse;
+
+    if (result?.success) {
+      toast({
+        title: "Success",
+        description:
+          formType === "SIGN_IN"
+            ? "Signed in successfully"
+            : "Signed up successfully",
+      });
+      router.push(ROUTES.HOME);
+    } else {
+      toast({
+        title: `Error ${result?.status}`,
+        description: result?.error?.message || "Something went wrong",
+        variant: "destructive",
+      });
+    }
   };
 
   const buttonText = formType === "SIGN_IN" ? "Sign In" : "Sign Up";
