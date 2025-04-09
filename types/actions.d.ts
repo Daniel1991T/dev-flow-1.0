@@ -16,8 +16,16 @@ type AuthCredentials = {
   password: string;
 };
 
-type CreateQuestionsParams = {
+type CreateQuestionParams = {
   title: string;
   content: string;
   tags: string[];
+};
+
+type EditQuestionParams = {
+  questionId: string;
+} & CreateQuestionParams;
+
+type GetQuestionParams = {
+  questionId: string;
 };
