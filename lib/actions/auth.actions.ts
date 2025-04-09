@@ -32,7 +32,44 @@ export async function signUpWithCredentials(
   try {
     const existingUser = await User.findOne({ email }).session(session);
     if (existingUser) {
-      throw new Error("User already exists!");
+      const existingAccount = await Account.findOne({
+        provider: "credentials",
+        providerAccountId: email,
+      }).session(session);
+
+      if (existingAccount) {
+        throw new Error("Account already exists!");
+      }
+
+      const existingUsername = await User.findOne({ username }).session(
+        session,
+      );
+      if (
+        existingUsername &&
+        existingUsername._id.toString() !== existingUser._id.toString()
+      ) {
+        throw new Error("Username already exists!");
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 12);
+
+      await Account.create(
+        [
+          {
+            userId: existingUser._id,
+            name: existingUser.name || name,
+            provider: "credentials",
+            providerAccountId: email,
+            password: hashedPassword,
+          },
+        ],
+        { session },
+      );
+
+      await session.commitTransaction();
+      await signIn("credentials", { email, password, redirect: false });
+
+      return { success: true };
     }
     const existingUsername = await User.findOne({ username }).session(session);
     if (existingUsername) {

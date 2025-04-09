@@ -6,16 +6,16 @@ import React from "react";
 
 import { SheetClose } from "@/components/ui/sheet";
 import { sidebarLinks } from "@/constants";
-import ROUTES from "@/constants/routes";
 import { cn } from "@/lib/utils";
 
 type NavLinksProps = {
   isMobileNav?: boolean;
+  userId?: string;
 };
 
-const NavLinks = ({ isMobileNav = false }: NavLinksProps) => {
+const NavLinks = ({ isMobileNav = false, userId }: NavLinksProps) => {
   const pathname = usePathname();
-  const userId = 1;
+
   return (
     <>
       {sidebarLinks.map((link) => {
@@ -23,7 +23,9 @@ const NavLinks = ({ isMobileNav = false }: NavLinksProps) => {
           (pathname.includes(link.route) && link.route.length > 1) ||
           pathname === link.route;
 
-        if (link.route === ROUTES.PROFILE) {
+        if (link.route === "/profile") {
+          console.log("UserId", userId);
+
           if (userId) link.route = `${link.route}/${userId}`;
           return null;
         }
