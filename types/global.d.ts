@@ -46,14 +46,10 @@ type RouteParams = {
   searchParams: Promise<Record<string, string>>;
 };
 
-export {
-  Tag,
-  Author,
-  Question,
-  ActionResponse,
-  SuccessResponse,
-  ErrorResponse,
-  APIErrorResponse,
-  APIResponse,
-  RouteParams,
+type PaginatedSearchParams = {
+  page?: number;
+  pageSize?: number;
+  query?: string;
+  filter?: string;
+  sort?: string;
 };

@@ -1,13 +1,15 @@
 "use server";
-import mongoose from "mongoose";
+import mongoose, { FilterQuery } from "mongoose";
 
+import FILTER_OPTIONS from "@/constants/filter";
 import { HTTP_STATUS_CODE } from "@/constants/httpStatusCode";
-import Question from "@/database/question.model";
+import Question, { TQuestionDoc } from "@/database/question.model";
 import TagQuestion from "@/database/tag-question.model";
 import Tag, { TTagDoc } from "@/database/tag.model";
 import {
   ActionResponse,
   ErrorResponse,
+  PaginatedSearchParams,
   Question as TQuestion,
 } from "@/types/global";
 
@@ -18,6 +20,7 @@ import {
   AskQuestionSchema,
   EditQuestionSchema,
   GetQuestionSchema,
+  PaginatedSearchParamsSchema,
 } from "../validations";
 
 export async function createQuestion(
@@ -80,7 +83,7 @@ export async function createQuestion(
 
 export async function editQuestion(
   params: EditQuestionParams,
-): Promise<ActionResponse<TQuestion>> {
+): Promise<ActionResponse<TQuestionDoc>> {
   const validationResult = await actions({
     params,
     schema: EditQuestionSchema,
@@ -113,17 +116,21 @@ export async function editQuestion(
     }
 
     const tagsToAdd = tags.filter(
-      (tag) => !question.tags.includes(tag.toLowerCase()),
+      (tag) =>
+        !question.tags.some((t: TTagDoc) =>
+          t.name.toLowerCase().includes(tag.toLowerCase()),
+        ),
     );
     const tagsToRemove = question.tags.filter(
-      (tag: TTagDoc) => !tags.includes(tag.name.toLowerCase()),
+      (tag: TTagDoc) =>
+        !tags.some((t) => t.toLowerCase() === tag.name.toLowerCase()),
     );
 
     const newTagDocuments = [];
     if (tagsToAdd.length > 0) {
       for (const tag of tagsToAdd) {
         const existingTag = await Tag.findOneAndUpdate(
-          { name: { $regex: new RegExp(`^${tag}$`, "i") } },
+          { name: { $regex: `^${tag}$`, $options: "i" } },
           { $setOnInsert: { name: tag }, $inc: { questions: 1 } },
           { upsert: true, new: true, session },
         );
@@ -153,7 +160,10 @@ export async function editQuestion(
         { session },
       );
       question.tags = question.tags.filter(
-        (tag: mongoose.Types.ObjectId) => !tagIdsToRemove.includes(tag._id),
+        (tag: mongoose.Types.ObjectId) =>
+          !tagIdsToRemove.some((id: mongoose.Types.ObjectId) =>
+            id.equals(tag._id),
+          ),
       );
     }
     if (newTagDocuments.length > 0) {
@@ -196,6 +206,82 @@ export async function getQuestion(
       success: true,
       status: HTTP_STATUS_CODE.OK,
       data: JSON.parse(JSON.stringify(question)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getQuestions(
+  params: PaginatedSearchParams,
+): Promise<ActionResponse<{ questions: TQuestion[]; isNext: boolean }>> {
+  const validationResult = await actions({
+    params,
+    schema: PaginatedSearchParamsSchema,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  const { page = 1, pageSize = 10, query, filter } = validationResult.params!;
+  const skip = (Number(page) - 1) * pageSize;
+  const limit = Number(pageSize);
+
+  const filterQuery: FilterQuery<typeof Question> = {};
+
+  if (filter === FILTER_OPTIONS.RECOMMENDED) {
+    return {
+      success: true,
+      status: HTTP_STATUS_CODE.OK,
+      data: {
+        questions: [],
+        isNext: false,
+      },
+    };
+  }
+
+  if (query) {
+    filterQuery.$or = [
+      { title: { $regex: new RegExp(query, "i") } },
+      { content: { $regex: new RegExp(query, "i") } },
+    ];
+  }
+  let sortCriteria = {};
+
+  switch (filter) {
+    case FILTER_OPTIONS.NEWEST:
+      sortCriteria = { createdAt: -1 };
+      break;
+    case FILTER_OPTIONS.POPULAR:
+      sortCriteria = { upvotes: -1 };
+      break;
+    case FILTER_OPTIONS.UNANSWERED:
+      filterQuery.answers = { answers: 0 };
+      sortCriteria = { createdAt: -1 };
+      break;
+    default:
+      sortCriteria = { createdAt: -1 };
+      break;
+  }
+
+  try {
+    const totalQuestions = await Question.countDocuments(filterQuery);
+    const questions = await Question.find(filterQuery)
+      .populate("tags", "name")
+      .populate("author", "name image")
+      .lean()
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(limit);
+
+    const isNext = totalQuestions > skip * questions.length;
+
+    return {
+      success: true,
+      status: HTTP_STATUS_CODE.OK,
+      data: {
+        questions: JSON.parse(JSON.stringify(questions)),
+        isNext,
+      },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
