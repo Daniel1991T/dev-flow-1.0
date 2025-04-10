@@ -8,7 +8,7 @@ export const sidebarLinks = [
   },
   {
     imgURL: "/icons/users.svg",
-    route: ROUTES.COMUNITY,
+    route: ROUTES.COMMUNITY,
     label: "Community",
   },
   {
