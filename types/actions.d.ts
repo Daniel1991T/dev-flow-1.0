@@ -29,3 +29,7 @@ type EditQuestionParams = {
 type GetQuestionParams = {
   questionId: string;
 };
+
+type GetTagQuestions = {
+  tagId: string;
+} & Omit<PaginatedSearchParams, "filter">;
