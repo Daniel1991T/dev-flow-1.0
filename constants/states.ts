@@ -41,7 +41,7 @@ export const UI_STATES = {
     message: "The tag cloud is empty. Add some keywords to make it rain.",
     button: {
       text: "Create Tag",
-      href: ROUTES.TAG,
+      href: ROUTES.TAGS,
     },
   },
   EMPTY_COLLECTIONS: {

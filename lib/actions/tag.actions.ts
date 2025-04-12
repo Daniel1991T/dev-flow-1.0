@@ -3,11 +3,11 @@ import { FilterQuery } from "mongoose";
 import { FILTER_TAG } from "@/constants/filter";
 import { HTTP_STATUS_CODE } from "@/constants/httpStatusCode";
 import { Tag } from "@/database";
-import { TTag } from "@/database/tag.model";
 import {
   ActionResponse,
   ErrorResponse,
   PaginatedSearchParams,
+  Tag as TagType,
 } from "@/types/global";
 
 import actions from "../handlers/actions";
@@ -16,7 +16,7 @@ import { PaginatedSearchParamsSchema } from "../validations";
 
 export const getTags = async (
   params: PaginatedSearchParams,
-): Promise<ActionResponse<{ tags: TTag[]; isNext: boolean }>> => {
+): Promise<ActionResponse<{ tags: TagType[]; isNext: boolean }>> => {
   const validationResult = await actions({
     params,
     schema: PaginatedSearchParamsSchema,

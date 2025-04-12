@@ -75,6 +75,8 @@ const DataRenderer = <T,>({
   empty = UI_STATES.DEFAULT_EMPTY,
   render,
 }: DataRendererProps<T>) => {
+  console.log("DataRenderer", data);
+
   if (!success) {
     return (
       <StateSkeleton
