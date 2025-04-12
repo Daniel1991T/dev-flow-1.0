@@ -1,7 +1,7 @@
 "use server";
 import mongoose, { FilterQuery } from "mongoose";
 
-import FILTER_OPTIONS from "@/constants/filter";
+import { FILTER_OPTIONS } from "@/constants/filter";
 import { HTTP_STATUS_CODE } from "@/constants/httpStatusCode";
 import Question, { TQuestionDoc } from "@/database/question.model";
 import TagQuestion from "@/database/tag-question.model";

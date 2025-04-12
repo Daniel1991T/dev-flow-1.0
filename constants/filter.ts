@@ -5,4 +5,11 @@ const FILTER_OPTIONS = {
   UNANSWERED: "unanswered",
 };
 
-export default FILTER_OPTIONS;
+const FILTER_TAG = {
+  POPULAR: "popular",
+  RECENT: "recent",
+  OLDEST: "oldest",
+  NAME: "name",
+};
+
+export { FILTER_OPTIONS, FILTER_TAG };
