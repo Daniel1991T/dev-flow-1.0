@@ -18,7 +18,6 @@ const Tags = async ({ searchParams }: RouteParams) => {
   });
 
   const { tags } = data || {};
-  console.log("tags", JSON.stringify(tags, null, 2));
 
   return (
     <>
