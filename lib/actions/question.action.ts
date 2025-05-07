@@ -1,8 +1,10 @@
 "use server";
 import mongoose, { FilterQuery } from "mongoose";
+import { revalidatePath } from "next/cache";
 
 import { FILTER_OPTIONS } from "@/constants/filter";
 import { HTTP_STATUS_CODE } from "@/constants/httpStatusCode";
+import ROUTES from "@/constants/routes";
 import Question, { TQuestionDoc } from "@/database/question.model";
 import TagQuestion from "@/database/tag-question.model";
 import Tag, { TTagDoc } from "@/database/tag.model";
@@ -20,6 +22,7 @@ import {
   AskQuestionSchema,
   EditQuestionSchema,
   GetQuestionSchema,
+  IncrementViewsParamsSchema,
   PaginatedSearchParamsSchema,
 } from "../validations";
 
@@ -283,6 +286,39 @@ export async function getQuestions(
       data: {
         questions: JSON.parse(JSON.stringify(questions)),
         isNext,
+      },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function incrementViews(
+  params: IncrementViewsParams,
+): Promise<ActionResponse<{ views: number }>> {
+  const validationResult = await actions({
+    params,
+    schema: IncrementViewsParamsSchema,
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { questionId } = validationResult.params!;
+
+  try {
+    const question = await Question.findById(questionId);
+    if (!question) {
+      throw new NotFoundError("Question");
+    }
+    question.views += 1;
+    await question.save();
+    revalidatePath(ROUTES.QUESTION(questionId));
+    return {
+      success: true,
+      status: HTTP_STATUS_CODE.OK,
+      data: {
+        views: question.views,
       },
     };
   } catch (error) {

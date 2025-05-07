@@ -33,3 +33,7 @@ type GetQuestionParams = {
 type GetTagQuestions = {
   tagId: string;
 } & Omit<PaginatedSearchParams, "filter">;
+
+type IncrementViewsParams = {
+  questionId: string;
+};
