@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+// eslint-disable-next-line camelcase
+import { unstable_after } from "next/server";
 import React from "react";
 
 import TagCard from "@/components/cards/TagCard";
@@ -13,11 +15,12 @@ import { RouteParams } from "@/types/global";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  const [_, { success, data: question }] = await Promise.all([
-    await incrementViews({ questionId: id }),
-    await getQuestion({ questionId: id }),
-  ]);
+
+  const { success, data: question } = await getQuestion({ questionId: id });
+
+  unstable_after(async () => {
+    await incrementViews({ questionId: id });
+  });
 
   if (!success || !question) return redirect(ROUTES.NOT_FOUND);
   const { answers, author, content, createdAt, tags, title, views } = question;
