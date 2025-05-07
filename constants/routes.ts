@@ -11,6 +11,7 @@ const ROUTES = {
   QUESTION: (id: string) => `/question/${id}`,
   ASK_QUESTION: "/ask-question",
   SIGN_IN_WITH_OAUTH: "/signin-with-oauth",
+  NOT_FOUND: "/404",
 };
 
 export default ROUTES;
