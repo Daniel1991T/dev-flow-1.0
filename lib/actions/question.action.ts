@@ -1,10 +1,8 @@
 "use server";
 import mongoose, { FilterQuery } from "mongoose";
-import { revalidatePath } from "next/cache";
 
 import { FILTER_OPTIONS } from "@/constants/filter";
 import { HTTP_STATUS_CODE } from "@/constants/httpStatusCode";
-import ROUTES from "@/constants/routes";
 import Question, { TQuestionDoc } from "@/database/question.model";
 import TagQuestion from "@/database/tag-question.model";
 import Tag, { TTagDoc } from "@/database/tag.model";
@@ -313,7 +311,6 @@ export async function incrementViews(
     }
     question.views += 1;
     await question.save();
-    revalidatePath(ROUTES.QUESTION(questionId));
     return {
       success: true,
       status: HTTP_STATUS_CODE.OK,
