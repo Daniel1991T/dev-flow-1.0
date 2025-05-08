@@ -4,7 +4,7 @@ import { MDXEditorMethods } from "@mdxeditor/editor";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -16,6 +16,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { toast } from "@/hooks/use-toast";
+import { createAnswer } from "@/lib/actions/answer.actions";
 import { AnswerSchema } from "@/lib/validations";
 
 const Editor = dynamic(() => import("@/components/editor/Editor"), {
@@ -23,9 +25,9 @@ const Editor = dynamic(() => import("@/components/editor/Editor"), {
   ssr: false,
 });
 
-const AnswerForm = () => {
+const AnswerForm = ({ questionId }: { questionId: string }) => {
   const editorRef = useRef<MDXEditorMethods>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAnswering, startAnsweringTransition] = useTransition();
   const [isAISubmitting, setIsAISubmitting] = useState(false);
 
   // 1. Define your form.
@@ -37,7 +39,25 @@ const AnswerForm = () => {
   });
 
   const handleSubmit = async (values: z.infer<typeof AnswerSchema>) => {
-    console.log(values);
+    startAnsweringTransition(async () => {
+      const result = await createAnswer({
+        questionId,
+        content: values.content,
+      });
+      if (result.success) {
+        form.reset();
+        toast({
+          title: "Answer posted",
+          description: "Your answer has been posted successfully",
+        });
+      } else {
+        toast({
+          title: `Error ${result.status}`,
+          description: result.error?.message || "Something went wrong",
+          variant: "destructive",
+        });
+      }
+    });
   };
 
   return (
@@ -97,10 +117,10 @@ const AnswerForm = () => {
           <div className="flex justify-end">
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isAnswering}
               className="primary-gradient w-fit"
             >
-              {isSubmitting ? (
+              {isAnswering ? (
                 <>
                   <ReloadIcon className="mr-2 size-4 animate-spin" />
                   <span>Posting...</span>

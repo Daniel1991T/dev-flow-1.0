@@ -23,7 +23,6 @@ const Preview = ({ content }: { content: string }) => {
           ),
         }}
       />
-      ;
     </section>
   );
 };
