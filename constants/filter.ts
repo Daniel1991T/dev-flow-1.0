@@ -12,4 +12,10 @@ const FILTER_TAG = {
   NAME: "name",
 };
 
-export { FILTER_OPTIONS, FILTER_TAG };
+const FILTER_ANSWERS = {
+  LATEST: "latest",
+  OLDEST: "oldest",
+  POPULAR: "popular",
+};
+
+export { FILTER_OPTIONS, FILTER_TAG, FILTER_ANSWERS };

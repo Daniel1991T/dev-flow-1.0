@@ -53,3 +53,10 @@ type PaginatedSearchParams = {
   filter?: string;
   sort?: string;
 };
+
+type Answer = {
+  _id: string;
+  content: string;
+  author: Author;
+  createdAt: Date;
+};

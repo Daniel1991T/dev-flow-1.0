@@ -28,7 +28,8 @@ const Editor = dynamic(() => import("@/components/editor/Editor"), {
 const AnswerForm = ({ questionId }: { questionId: string }) => {
   const editorRef = useRef<MDXEditorMethods>(null);
   const [isAnswering, startAnsweringTransition] = useTransition();
-  const [isAISubmitting, setIsAISubmitting] = useState(false);
+
+  const [isAISubmitting] = useState(false);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof AnswerSchema>>({
@@ -46,6 +47,9 @@ const AnswerForm = ({ questionId }: { questionId: string }) => {
       });
       if (result.success) {
         form.reset();
+        if (editorRef.current) {
+          editorRef.current.setMarkdown("");
+        }
         toast({
           title: "Answer posted",
           description: "Your answer has been posted successfully",

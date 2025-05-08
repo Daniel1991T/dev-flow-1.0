@@ -1,3 +1,5 @@
+import { PaginatedSearchParams } from "./global";
+
 type SignInWithOAuthParams = {
   provider: "google" | "github";
   providerAccountId: string;
@@ -42,3 +44,7 @@ type CreateAnswerParams = {
   questionId: string;
   content: string;
 };
+
+type GetAnswersParams = {
+  questionId: string;
+} & PaginatedSearchParams;

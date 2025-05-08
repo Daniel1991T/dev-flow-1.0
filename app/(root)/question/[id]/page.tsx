@@ -9,7 +9,9 @@ import Preview from "@/components/editor/Preview";
 import AnswerForm from "@/components/forms/AnswerForm";
 import Metric from "@/components/Metric";
 import UserAvatar from "@/components/UserAvatar";
+import { FILTER_ANSWERS } from "@/constants/filter";
 import ROUTES from "@/constants/routes";
+import { getAnswers } from "@/lib/actions/answer.actions";
 import { getQuestion, incrementViews } from "@/lib/actions/question.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 import { RouteParams } from "@/types/global";
@@ -24,6 +26,18 @@ const QuestionDetails = async ({ params }: RouteParams) => {
   });
 
   if (!success || !question) return redirect(ROUTES.NOT_FOUND);
+  const {
+    success: AreAnswersLoaded,
+    data: answersResult,
+    error: answersError,
+  } = await getAnswers({
+    questionId: question._id,
+    page: 1,
+    pageSize: 10,
+    filter: FILTER_ANSWERS.LATEST,
+  });
+  console.log(answersResult);
+
   const { answers, author, content, createdAt, tags, title, views } = question;
   return (
     <>
