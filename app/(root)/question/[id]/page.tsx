@@ -10,6 +10,7 @@ import Preview from "@/components/editor/Preview";
 import AnswerForm from "@/components/forms/AnswerForm";
 import Metric from "@/components/Metric";
 import UserAvatar from "@/components/UserAvatar";
+import Votes from "@/components/votes/Votes";
 import { FILTER_ANSWERS } from "@/constants/filter";
 import ROUTES from "@/constants/routes";
 import { getAnswers } from "@/lib/actions/answer.actions";
@@ -58,7 +59,12 @@ const QuestionDetails = async ({ params }: RouteParams) => {
             </Link>
           </div>
           <div className="flex justify-end">
-            <p>Votes</p>
+            <Votes
+              upvotes={question.upvotes}
+              downvotes={question.downvotes}
+              hasupVote={false}
+              hasdownVote={true}
+            />
           </div>
         </div>
         <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full">
