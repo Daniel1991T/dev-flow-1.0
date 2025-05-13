@@ -6,6 +6,8 @@ import { UI_STATES } from "@/constants/states";
 
 import { Button } from "./ui/button";
 
+type UIState = (typeof UI_STATES)[keyof typeof UI_STATES];
+
 type DataRendererProps<T> = {
   success: boolean;
   error?: {
@@ -13,7 +15,7 @@ type DataRendererProps<T> = {
     details?: Record<string, string[]>;
   };
   data: T[] | null | undefined;
-  empty: typeof UI_STATES.DEFAULT_EMPTY;
+  empty: UIState;
   render: (data: T[]) => React.ReactNode;
 };
 
@@ -26,8 +28,8 @@ type StateSkeletonProps = {
   title: string;
   message: string;
   button?: {
-    text: string;
-    href: string;
+    text?: string;
+    href?: string;
   };
 };
 
@@ -59,7 +61,7 @@ const StateSkeleton = ({
       {message}
     </p>
     {button ? (
-      <Link href={button.href}>
+      <Link href={button.href!}>
         <Button className="paragraph-medium mt-5 min-h-[46px] rounded-lg bg-primary-500 px-4 py-3 text-light-900 hover:bg-primary-500">
           {button.text}
         </Button>
@@ -104,7 +106,7 @@ const DataRenderer = <T,>({
         }}
         title={empty.title}
         message={empty.message}
-        button={empty.button}
+        button={"button" in empty ? empty.button : undefined}
       />
     );
   }

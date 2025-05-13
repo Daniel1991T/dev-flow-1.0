@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { unstable_after } from "next/server";
 import React from "react";
 
+import AllAnswers from "@/components/answers/AllAnswers";
 import TagCard from "@/components/cards/TagCard";
 import Preview from "@/components/editor/Preview";
 import AnswerForm from "@/components/forms/AnswerForm";
@@ -97,6 +98,14 @@ const QuestionDetails = async ({ params }: RouteParams) => {
       </div>
       <section className="my-5">
         <AnswerForm questionId={question._id} />
+      </section>
+      <section className="my-5">
+        <AllAnswers
+          data={answersResult?.answers}
+          success={AreAnswersLoaded}
+          error={answersError}
+          totalAnswers={answersResult?.totalAnswers}
+        />
       </section>
     </>
   );

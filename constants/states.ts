@@ -53,7 +53,12 @@ export const UI_STATES = {
       href: ROUTES.COLLECTION,
     },
   },
-};
+  EMPTY_ANSWERS: {
+    title: "No Answers Yet!",
+    message:
+      "The answer board is empty. Make it rain with your brilliant answer!",
+  },
+} as const;
 
 // export const DEFAULT_EMPTY = {
 //   title: "No Data Found",
