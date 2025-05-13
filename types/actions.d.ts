@@ -48,3 +48,13 @@ type CreateAnswerParams = {
 type GetAnswersParams = {
   questionId: string;
 } & PaginatedSearchParams;
+
+type CreateVoteParams = {
+  targetId: string;
+  targetType: "question" | "answer";
+  voteType: "upvote" | "downvote";
+};
+
+type UpdateVoteCountParams = {
+  change: 1 | -1;
+} & CreateVoteParams;
