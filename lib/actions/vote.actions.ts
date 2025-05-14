@@ -1,8 +1,10 @@
 "use server";
 
 import mongoose, { ClientSession } from "mongoose";
+import { revalidatePath } from "next/cache";
 
 import { HTTP_STATUS_CODE } from "@/constants/httpStatusCode";
+import ROUTES from "@/constants/routes";
 import { Answer, Question, Vote } from "@/database";
 import {
   CreateVoteParams,
@@ -35,6 +37,7 @@ export async function updateVoteCount(
 
   const Model = targetType === "question" ? Question : Answer;
   const voteField = voteType === "upvote" ? "upvotes" : "downvotes";
+  console.log("vote type", voteField);
 
   try {
     const result = await Model.findByIdAndUpdate(
@@ -75,8 +78,8 @@ export async function createVote(
   try {
     const existingVote = await Vote.findOne({
       author: userId,
-      actionId: targetId,
-      actionType: targetType,
+      id: targetId,
+      type: targetType,
     }).session(session);
     if (existingVote) {
       if (existingVote.voteType === voteType) {
@@ -102,6 +105,15 @@ export async function createVote(
           {
             targetId,
             targetType,
+            voteType: existingVote.voteType,
+            change: -1,
+          },
+          session,
+        );
+        await updateVoteCount(
+          {
+            targetId,
+            targetType,
             voteType,
             change: 1,
           },
@@ -112,8 +124,9 @@ export async function createVote(
       await Vote.create(
         [
           {
-            targetId,
-            targetType,
+            author: userId,
+            id: targetId,
+            type: targetType,
             voteType,
           },
         ],
@@ -130,6 +143,7 @@ export async function createVote(
       );
     }
     await session.commitTransaction();
+    revalidatePath(ROUTES.QUESTION(targetId));
     return {
       status: HTTP_STATUS_CODE.OK,
       success: true,
@@ -160,9 +174,11 @@ export async function hasVoted(
   try {
     const vote = await Vote.findOne({
       author: userId,
-      actionId: targetId,
-      actionType: targetType,
+      id: targetId,
+      type: targetType,
     });
+    console.log(vote);
+
     if (!vote) {
       return {
         success: false,
@@ -173,6 +189,8 @@ export async function hasVoted(
         },
       };
     }
+    console.log(vote);
+
     return {
       success: true,
       status: HTTP_STATUS_CODE.OK,

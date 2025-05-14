@@ -13,7 +13,17 @@ type QuestionProps = {
 };
 
 const QuestionCard = ({
-  question: { _id, answers, author, createdAt, tags, title, upvotes, views },
+  question: {
+    _id,
+    answers,
+    author,
+    createdAt,
+    tags,
+    title,
+    upvotes,
+    downvotes,
+    views,
+  },
 }: QuestionProps) => {
   return (
     <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
@@ -49,7 +59,7 @@ const QuestionCard = ({
           <Metric
             imgUrl="/icons/like.svg"
             alt="like"
-            value={upvotes}
+            value={upvotes + downvotes}
             title=" Votes"
             textStyles="small-medium text-dark400_light800"
           />
